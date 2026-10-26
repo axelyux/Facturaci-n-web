@@ -5,6 +5,7 @@ Ejecutar **en el equipo autorizado**, no en este repositorio en la nube. PowerSh
 1. Definir variables en la sesión (no escribir la contraseña en comandos guardados en historial):
    `$env:CONTPAQ_SQL_SERVER='EQUIPO\INSTANCIA'; $env:CONTPAQ_SQL_USER='sa'; $env:CONTPAQ_SQL_PASSWORD=(Read-Host 'Contraseña' -MaskInput)` (pwsh 7) o con `[Net.NetworkCredential]::new('', (Read-Host -AsSecureString)).Password` en PS 5.1.
 2. `.\Inspeccionar-Instalacion.ps1` → `salida\instalacion.txt` (versión, DLL y bitness, COM).
+2b. `.\Inspeccionar-SDK.ps1` → `salida\sdk.txt` (DLL del SDK, servicios y puertos locales, instancias SQL locales).
 3. `.\Invoke-AuditoriaSql.ps1` → CSV de metadatos en `salida\`. Si el certificado del servidor no es de confianza, añadir `-ConfiarCertificado` (solo red local de pruebas).
 4. Comprimir `salida\` y compartirla; contiene metadatos (nombres de tablas/columnas, tipos, relaciones), **sin datos de negocio**. Revísela antes.
 

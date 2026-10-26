@@ -17,6 +17,7 @@ Reglas: entorno de pruebas autorizado (empresa de prueba/copia, nunca producció
 | Fecha | EXP | Resultado | Evidencia |
 |---|---|---|---|
 | 2026-10-26 | EXP-02 (metadatos) | **BLOQUEADO**: instancia no identificada, sin credenciales, entorno sin acceso a la red del usuario. No se intentó ninguna conexión. | Inspección de entorno en la sesión; `scripts/diagnostico/` preparado |
+| 2026-10-26 | EXP-00 (instalación) | **PARCIAL**: Comercial Start/Pro v10.0.0 y Punto de Venta instalados; SDK `SDKPro*` x86 presente; sin documentación ni licencia confirmadas. Ver INTEGRACION_COMERCIAL_PRO.md | `salida\instalacion.txt` del equipo del usuario |
 | 2026-10-26 | Guarda de solo lectura | PROBADO: `scripts/check-sql-readonly.sh` pasa sobre 7 .sql (detectó y obligó a corregir un INSERT propio) | salida del script |
 | — | EXP-03/05/06 | PENDIENTE | — |
 

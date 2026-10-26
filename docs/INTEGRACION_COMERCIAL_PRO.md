@@ -60,3 +60,27 @@ Estados explícitos, clave de idempotencia, lease del trabajo, consulta de exist
 
 ## Fase D — Mecanismo de facturación: BLOQUEADA
 No existe evidencia verificada de un mecanismo que permita, en Pro: identificar el documento origen, crear/recuperar cliente, crear factura, timbrar, obtener UUID/archivos y consultar operaciones interrumpidas. **Falta:** versión/edición, documentación oficial o acuerdo SDK de CONTPAQi, e instalación de pruebas donde ejecutar EXP-01. No se instaló ningún paquete de terceros. Hasta entonces la integración fiscal queda BLOQUEADA y el portal solo puede diseñarse contra una interfaz abstracta con un `Fake`.
+
+## Hallazgos del equipo real (2026-10-26) — VERIFICADO EN EL EQUIPO (salida de `Inspeccionar-Instalacion.ps1`)
+Equipo: Windows (10.0.26200), 64 bits, PowerShell 5.1.
+
+| Hecho | Evidencia | Certeza |
+|---|---|---|
+| Producto instalado: **CONTPAQi Comercial Start / Pro v10.0.0**, en `C:\Program Files (x86)\Compac\ComercialSP` | Registro de programas | Verificado |
+| También instalado: **CONTPAQi Punto de Venta (Local)** en `...\Compacw\PuntoDeVenta` | Registro de programas | Verificado |
+| En la carpeta de Comercial existen `SDK.dll` (v9.01), `SDKPro.dll` (v1.0.0.60), `SDKProNETWrapper.dll` (v1.0.0.25) + `.tlb`, `SDKProPremium.dll` (v1.0.0.3), `SDKPro.WopenConfiguration.dll` | Listado de archivos | Verificado que existen; **su función, API y licencia NO están verificadas** |
+| Todas esas DLL son **x86 (32 bits)** | Cabecera PE | Verificado |
+| Servicio `ComercialSPWorkerService` (x64, .NET), **detenido** | Servicios + PE | Verificado; propósito desconocido |
+| Servicio `ContpaqiBridge` ejecutado con **NSSM** (`nssm.exe`), en ejecución | Servicios | Verificado que existe; **no es componente conocido de CONTPAQi: ¿quién lo instaló y para qué?** |
+| Servidores de licencias AppKey en ejecución | Servicios | Verificado |
+| COM registrado con "CONTPAQ|MGW|Comercial": solo `Contpaq.*`/`LBS.*` (Contabilidad antigua) y `LC.XEngineNETWrapper.ContpaqiTools`. **No hay un ProgID COM de Comercial** | Registro | Verificado (según el filtro usado) |
+| Punto de Venta trae `MGW_SDK.dll` v15.0.1.0 (x86) y librerías MGW*; Comercial Start/Pro trae la familia `SDKPro*` | Listado de archivos | Verificado que existen |
+
+### Consecuencias (HIPÓTESIS derivadas)
+- Existe evidencia de que Comercial Start/Pro incorpora su **propio** SDK (`SDKPro*`), distinto del `MGW_SDK` de Punto de Venta. Esto **no** demuestra que permita crear/timbrar facturas. No asumir compatibilidad con paquetes de terceros hechos para Premium.
+- Cualquier proceso que cargue esas DLL será **de 32 bits**. El conector debe compilarse x86 (puede ser .NET moderno x86 si `SDKProNETWrapper` lo permite, o .NET Framework 4.8). La API y el web no se ven afectados (contrato JSON/HTTPS).
+- **Pregunta crítica nueva:** el "ticket" que el cliente trae, ¿lo emite **Punto de Venta** o **Comercial** como documento de venta? Eso cambia qué base y qué SDK importan. Hay que confirmar a qué sistema pertenece SONARMANDO.
+- `ContpaqiBridge` (NSSM) podría ser un puente existente, propio o de terceros: verificar antes de duplicar.
+
+### Siguiente evidencia (script `Inspeccionar-SDK.ps1`, solo lectura, probado con archivos sintéticos, aún no ejecutado en el equipo real)
+Cabeceras PE de las DLL del SDK (¿.NET o nativa? ¿32 bits requerido?), **nombres exportados** de las DLL nativas, claves de configuración del worker (valores sensibles omitidos), parámetros del servicio NSSM, puertos en escucha de procesos CONTPAQi, instancias SQL locales (por servicios locales, sin escanear la red).
