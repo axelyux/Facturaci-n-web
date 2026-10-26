@@ -105,3 +105,10 @@ Cabeceras PE de las DLL del SDK (¿.NET o nativa? ¿32 bits requerido?), **nombr
 ### Conclusiones provisionales (HIPÓTESIS)
 - Existe SDK .NET propio de Start/Pro; encaja con un conector **.NET Framework 4.8 / x86** (más seguro que .NET 10 mientras no se pruebe `SDKProNETWrapper` bajo .NET moderno). Esto no cambia la API ni el web.
 - Hay que comprobar con el código del puente existente y la API pública de `SDKPro*` si el SDK permite crear/timbrar documentos y consultar su estado.
+
+## Ubicación de SONARMANDO (2026-10-26) — VERIFICADO EN EL EQUIPO (salida de `Listar-Bases.ps1`)
+- `SONARMANDO` está en la instancia **`localhost\SQL2025`** (SQL Server instalada por el usuario), estado **ONLINE**, nivel de compatibilidad **120**, creada 2026-04-15. **No** está en la instancia `COMPAC`: allí el intento de abrirla falló.
+- En `SQL2025` existe además `SONARMANDO_PRUEBAS` (nivel 120, creada 2026-10-18): **¿es la copia de pruebas segura?** PENDIENTE de confirmar con el usuario antes de leer datos. En `COMPAC` existe `SON_ARMANDO` (nombre parecido, otra base).
+- Observación operativa: en `COMPAC`, la base `ComercialSP` y `GX_KB_Punto_De_Venta` están en **RECOVERY_PENDING** (no accesibles). No se tocó nada; el usuario debe revisarlo (disco/archivos/servicio). Relevante porque es la base estándar de Comercial Start/Pro.
+- **Implicación técnica:** con nivel de compatibilidad 120 no existe `STRING_AGG` (requiere 130). Los scripts `04` y `05` se reescribieron con `FOR XML PATH`. Sin probar contra SQL Server real hasta ejecutarlos.
+- Se listaron bases de dos instancias; no se leyó ningún dato de negocio. No se registran aquí los nombres de bases ajenas al proyecto.
