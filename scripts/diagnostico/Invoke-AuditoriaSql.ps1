@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
   Auditoría de SOLO LECTURA de metadatos de una base de datos (por defecto SONARMANDO).
 .DESCRIPTION
@@ -49,6 +49,7 @@ foreach ($f in $archivos) {
     if ($sinComentarios -match $prohibido) { throw "Script rechazado por contener operaciones no permitidas: $($f.Name)" }
 }
 
+$tx = $null
 $cn = New-Object System.Data.SqlClient.SqlConnection($sb.ConnectionString)
 try {
     $cn.Open()
