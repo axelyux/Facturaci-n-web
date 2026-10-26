@@ -1,0 +1,7 @@
+# Herramientas de Claude Code (inventario verificado 2026-10-26)
+- **Skills disponibles en la sesión** (verificado en el listado de la sesión): `engineering:architecture`, `engineering:system-design`, `engineering:testing-strategy`, `engineering:code-review`, `engineering:documentation`, `code-review`, `security-review`, `simplify`, `run`, `init`, `agent-engineering:*`, `artifact-design`, entre otras.
+- **Plugins instalados** (ListPlugins): ninguno propio; el plugin `engineering` aporta las skills anteriores. Sus servidores MCP (Asana, Atlassian, Datadog, GitHub, Linear, Notion, PagerDuty, Slack) **no conectaron** (403 del proxy / requieren autenticación): no se usan.
+- **MCP GitHub** (herramientas `mcp__github__*`): disponible, no usado (sin commits ni PR).
+- **Playwright**: Chromium preinstalado; `@playwright/test` 1.63.0 instalado en `tests/e2e` y verificado.
+- **No instalados**: Frontend Design, Superpowers, Context7. No se verificó su identificador exacto de marketplace; `SearchPlugins`/`SearchSkills` no se ejecutaron en esta etapa. Paso manual sugerido: `/plugin` en Claude Code → Discover, buscar "frontend-design" y "context7", revisar permisos/scripts antes de instalar. Para documentación actualizada de Next.js se usa la incluida en `node_modules/next/dist/docs/`.
+- **Skills del proyecto** (`.claude/skills/`): `verificar`, `nuevo-adr`, `experimento-comercial`. **Agentes** (`.claude/agents/`): `arquitecto-integracion`, `backend-seguridad`, `frontend-ux`, `calidad-revision`.
