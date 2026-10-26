@@ -3,7 +3,6 @@
   Inventario de SOLO LECTURA de la instalación local de CONTPAQi (versión, DLL, registros COM, bitness).
   No instala, no registra ni ejecuta nada de CONTPAQi. Escribe .\salida\instalacion.txt (sin secretos).
 #>
-Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $salida = Join-Path $PSScriptRoot 'salida'; New-Item -ItemType Directory -Force -Path $salida | Out-Null
 $o = New-Object System.Collections.Generic.List[string]
