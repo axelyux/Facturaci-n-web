@@ -84,3 +84,24 @@ Equipo: Windows (10.0.26200), 64 bits, PowerShell 5.1.
 
 ### Siguiente evidencia (script `Inspeccionar-SDK.ps1`, solo lectura, probado con archivos sintéticos, aún no ejecutado en el equipo real)
 Cabeceras PE de las DLL del SDK (¿.NET o nativa? ¿32 bits requerido?), **nombres exportados** de las DLL nativas, claves de configuración del worker (valores sensibles omitidos), parámetros del servicio NSSM, puertos en escucha de procesos CONTPAQi, instancias SQL locales (por servicios locales, sin escanear la red).
+
+## Hallazgos del SDK instalado (2026-10-26) — VERIFICADO EN EL EQUIPO (salida de `Inspeccionar-SDK.ps1`)
+| Componente (carpeta ComercialSP) | Tipo | Arquitectura | Nota |
+|---|---|---|---|
+| `SDKPro.dll` v1.0.0.60 | Ensamblado **.NET** | MSIL (AnyCPU) | API pública aún sin inspeccionar |
+| `SDKProPremium.dll` v1.0.0.3 | Ensamblado .NET | MSIL | Presente en una instalación Start/Pro; su alcance es desconocido |
+| `SDKPro.WopenConfiguration.dll` | .NET | MSIL | |
+| `SDKProNETWrapper.dll` v1.0.0.25 (+ `.tlb`) | .NET | **x86 obligatorio** | Envoltorio, probablemente sobre COM/nativo (HIPÓTESIS) |
+| `SDKPro.CommonRA.exe` | .NET (ejecutable) | x86 obligatorio | |
+| `SDK.dll` v9.01, `XEngineLib.dll`, `XEngineHTMLReport.dll`, `XEngineProFormat.dll` | **Nativas, servidores COM** (exportan DllGetClassObject/DllRegisterServer) | x86 | |
+| `XEngineNETWrapper.dll`, `XEngineNETWrapperV2.dll` | .NET | x86 obligatorio | |
+| `LC.Access2Sql.*`, `LC.AccessToSql.*` | .NET | x86 | Herramientas de migración Access→SQL |
+
+- **`ComercialSPWorkerService`**: aplicación .NET autocontenida x64, detenida; su `appsettings` solo contiene configuración de logging (sin URL, puertos ni cadenas de conexión). No hay evidencia de que sea una API local. Propósito: PENDIENTE.
+- **Instancias SQL locales** (servicios): `MSSQL$COMPAC` y `MSSQL$SQL2025`, ambas en ejecución. Puertos TCP en escucha de `sqlservr`: 49699 (todas las interfaces) y 49686 (solo loopback); no se determinó qué instancia usa cada uno. **No se ha verificado en cuál está SONARMANDO.**
+- **Servidores de licencias** AppKey: puertos 9120, 9020 y 9012 (este último de Punto de Venta).
+- **Puente previo del propio equipo:** el servicio `ContpaqiBridge` (NSSM) ejecuta un `ContpaqiBridge.exe` compilado para **.NET Framework 4.8** (`...\Icomerce\bridge-sdk\ContpaqiBridge\bin\Release\net48`, en una carpeta del Escritorio del usuario). No escucha en ningún puerto TCP visible. Es trabajo previo del usuario (HIPÓTESIS: usa el SDK `SDKPro*`); su código fuente es la mejor evidencia disponible de cómo se invoca el SDK y está PENDIENTE de revisión.
+
+### Conclusiones provisionales (HIPÓTESIS)
+- Existe SDK .NET propio de Start/Pro; encaja con un conector **.NET Framework 4.8 / x86** (más seguro que .NET 10 mientras no se pruebe `SDKProNETWrapper` bajo .NET moderno). Esto no cambia la API ni el web.
+- Hay que comprobar con el código del puente existente y la API pública de `SDKPro*` si el SDK permite crear/timbrar documentos y consultar su estado.
